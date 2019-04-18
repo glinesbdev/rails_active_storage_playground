@@ -15,6 +15,7 @@ class PostsController < ApplicationController
   # GET /posts/new
   def new
     @post = Post.new
+    @post.build_photo
   end
 
   # GET /posts/1/edit
@@ -40,6 +41,8 @@ class PostsController < ApplicationController
   # PATCH/PUT /posts/1
   # PATCH/PUT /posts/1.json
   def update
+    @post.build_photo unless @post.photo.present?
+
     respond_to do |format|
       if @post.update(post_params)
         format.html { redirect_to @post, notice: 'Post was successfully updated.' }
@@ -69,6 +72,6 @@ class PostsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def post_params
-      params.require(:post).permit(:title, :body, :posted_date, photo_attributes: [:main_image, other_images: []])
+      params.require(:post).permit(:id, :title, :body, :posted_date, :content, photo_attributes: [:id, :_destroy, :main_image, other_images: []])
     end
 end

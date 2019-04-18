@@ -25,18 +25,40 @@
     <%= form.label :posted_date %>
     <%= form.datetime_select :posted_date %>
   </div>
-  
+
   <%= form.fields_for :photo, post do |photo| %>
     <div class="field">
       <%= photo.label :main_image %>
       <%= photo.file_field :main_image %>
     </div>
 
-    <div class="field">
-      <%= photo.label :other_images %>
-      <%= photo.file_field :other_images, multiple: true %>
-    </div>
+    <% if post.photo.present? && post.photo.main_image.attached? %>
+      <div class="field">
+        <%= photo.label :_destroy, "Remove Main Image" %>
+        <%= photo.check_box :_destroy %>
+      </div>
+    <% end %>
   <% end %>
+
+  <% if post.photo.present? %>
+    <% if post.photo.main_image.attached? %>
+      <div>Current main image: </div>
+      <%= image_tag post.photo.main_image.variant(resize: '200x200') %>
+
+      <input type="hidden" name="post[photo_attributes][main_image]" value="<%= post.photo.main_image.attachment %>" />
+    <% end %>
+
+    <% if post.photo.other_images.attached? %>
+      <% post.photo.other_images.each do |other| %>
+        <input type="hidden" name="post[photo_attributes][other_images][]" value="<%= other.blob.signed_id %>" />
+      <% end %>
+    <% end %>
+  <% end %>
+  
+  <div class="field">
+    <%= form.label :content %>
+    <%= form.rich_text_area :content %>
+  </div>
 
   <div class="actions">
     <%= form.submit %>
