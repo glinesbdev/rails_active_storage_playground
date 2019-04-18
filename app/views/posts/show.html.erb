@@ -15,17 +15,17 @@
   <%= @post.posted_date %>
 </p>
 
-<% if @post.photo.present? %>
-  <% if @post.photo.main_image.attached? %>
-    <%= image_tag @post.photo.main_image %>
-  <% end %>
-
-  <% if @post.photo.other_images.attached? %>
-    <% @post.photo.other_images.each do |other| %>
-      <%= image_tag other %>
-    <% end %>
-  <% end %>
+<% if @post.photo.present? && @post.photo.main_image.attached? %>
+  <div>
+    <strong>Main Image</strong>
+    <%= image_tag @post.photo.main_image.variant(resize: '400x400') %>
+  </div>
 <% end %>
+
+<div>
+  <strong>Content</strong>
+  <%= @post.content %>
+</div>
 
 <%= link_to 'Edit', edit_post_path(@post) %> |
 <%= link_to 'Back', posts_path %>
