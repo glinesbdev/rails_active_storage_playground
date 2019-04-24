@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   root to: 'posts#index'
+  get 'blobs/:signed_id/*filename', to: 'blobs#show'
   delete 'blobs/:signed_id', to: 'blobs#destroy'
   resources :photos
   resources :posts

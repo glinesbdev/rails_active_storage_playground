@@ -29,6 +29,8 @@ class PostsController < ApplicationController
 
     respond_to do |format|
       if @post.save
+        attach_other_images
+
         format.html { redirect_to @post, notice: 'Post was successfully created.' }
         format.json { render :show, status: :created, location: @post }
       else
@@ -41,10 +43,10 @@ class PostsController < ApplicationController
   # PATCH/PUT /posts/1
   # PATCH/PUT /posts/1.json
   def update
-    @post.build_photo unless @post.photo.present?
-
     respond_to do |format|
       if @post.update(post_params)
+        attach_other_images
+
         format.html { redirect_to @post, notice: 'Post was successfully updated.' }
         format.json { render :show, status: :ok, location: @post }
       else
@@ -72,6 +74,16 @@ class PostsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def post_params
-      params.require(:post).permit(:id, :title, :body, :posted_date, :content, photo_attributes: [:id, :_destroy, :main_image, other_images: []])
+      params.require(:post).permit(:id, :title, :body, :posted_date, :content, photo_attributes: [:_id, :_destroy, :main_image, other_images: []])
+    end
+
+    def attach_other_images
+      blob_signed_ids = params[:post][:photo_attributes][:other_images]
+
+      if blob_signed_ids
+        blob_signed_ids.each do |signed_blob_id|
+          @post.photo.attach_other_images(signed_blob_id)
+        end
+      end
     end
 end
