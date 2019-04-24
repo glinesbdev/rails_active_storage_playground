@@ -1,3 +1,8 @@
+/** 
+ * Get the value of the window.TrixStorage object or assign it to a new object.
+*/
+window.TrixStorage = window.TrixStorage || {};
+
 /**
  * Add the Trix event listener when adding attachments to the editor.
  */
@@ -64,9 +69,9 @@ function attachToTrix(attachment, blob) {
   const xhr = new XMLHttpRequest();
 
   // Setup the url where we will save the attachment
-  const url = `/rails/active_storage/blobs/${blob.signed_id}/${blob.filename}`;
+  const url = `/blobs/${blob.signed_id}/${blob.filename}`;
 
-  xhr.open('GET', url, true);
+  xhr.open('POST', url, true);
 
   // Listen for the load XHR event and set the proper attributes on the attachment
   xhr.addEventListener('load', function (event) {
@@ -84,34 +89,41 @@ function attachToTrix(attachment, blob) {
   xhr.send(null);
 }
 
-// Listen for the event when an attachment is removed from the Trix editor
 document.addEventListener('trix-attachment-remove', (event) => {
-  // Get all of the attachments in the editor
-  const inputs = document.querySelectorAll('input[name="post[photo_attributes][other_images][]"]');
+  event.attachment.attachment.releaseFile(); // If your going to use this even with the bonus content, remove this line
 
-  // Iterate over all attachments
-  inputs.forEach((element) => {
-    // Make sure that we can find the attachment to be removed
-    const previewURL = event.attachment.attachment.previewURL;
-    const index = previewURL.indexOf(element.value);
-    const signed_id = previewURL.substr(index, element.value.length);
-    
-    // If we have the attachment...
-    if (index > -1) {
-      // ...create and send an XHR request to delete the object from our project
-      const xhr = new XMLHttpRequest();
+  // BONUS CONTENT!
+  // We will need to do a little bit of finagling to get the blob's signed_id to properly remove it from the server
 
-      xhr.open('DELETE', `/blobs/${signed_id}`, true);
+  // Get the previewURL segments that contains the blob's signed id
+  const urlSegments = event.attachment.attachment.previewURL.split('/');
+
+  // Filter the string to extract the id
+  const signedId = urlSegments.filter(segment => segment.indexOf('--') > -1)[0];
+
+  // Make sure we have a signed id
+  if (signedId) {
+    // Create a new XHR request
+    const xhr = new XMLHttpRequest();
+
+      // Open a DELETE request to remove the resource from the server
+      xhr.open('DELETE', `/blobs/${signedId}`, true);
+
+      // Make sure we set the correct headers so Rails doesn't block us
       xhr.setRequestHeader('X-CSRF-TOKEN', Rails.csrfToken());
 
+      // As long as the load XHR event is fired...
       xhr.addEventListener('load', function () {
+        // ... and the status is 204 ...
         if (xhr.status === 204) {
+          // Release the file from the editor
           event.attachment.attachment.releaseFile();
-          element.remove();
         }
       });
 
+      // Send off the request
       xhr.send(null);
-    }
-  });
+  } else {
+    // Handle the fact that you don't have the id based on your needs...
+  }
 });

@@ -10,20 +10,13 @@
   <%= @post.body %>
 </p>
 
-<p>
-  <strong>Posted date:</strong>
-  <%= @post.posted_date %>
-</p>
-
 <% if @post.photo.present? && @post.photo.main_image.attached? %>
   <div>
-    <strong>Main Image</strong>
     <%= image_tag @post.photo.main_image.variant(resize: '400x400') %>
   </div>
 <% end %>
 
 <div>
-  <strong>Content</strong>
   <%= @post.content %>
 </div>
 
