@@ -10,9 +10,9 @@
   <%= @post.body %>
 </p>
 
-<% if @post.photo.present? && @post.photo.main_image.attached? %>
+<% if @post.main_image.attached? %>
   <div>
-    <%= image_tag @post.photo.main_image.variant(resize: '400x400') %>
+    <%= image_tag @post.main_image.variant(resize: '400x400') %>
   </div>
 <% end %>
 
