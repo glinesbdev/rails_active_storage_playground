@@ -1,8 +1,6 @@
 Rails.application.routes.draw do
   root to: 'posts#index'
-  get 'blobs/:signed_id/*filename', to: 'blobs#show'
+  match 'blobs/:signed_id/*filename', to: 'blobs#show', via: [:get, :post]
   delete 'blobs/:signed_id', to: 'blobs#destroy'
-  resources :photos
   resources :posts
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

@@ -15,7 +15,6 @@ class PostsController < ApplicationController
   # GET /posts/new
   def new
     @post = Post.new
-    @post.build_photo
   end
 
   # GET /posts/1/edit
@@ -45,6 +44,7 @@ class PostsController < ApplicationController
   def update
     respond_to do |format|
       if @post.update(post_params)
+        @post.main_image.purge if @post.main_image.present? && @post.remove_main_image
         attach_other_images
 
         format.html { redirect_to @post, notice: 'Post was successfully updated.' }
@@ -67,23 +67,24 @@ class PostsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_post
-      @post = Post.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def post_params
-      params.require(:post).permit(:id, :title, :body, :posted_date, :content, photo_attributes: [:_id, :_destroy, :main_image, other_images: []])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_post
+    @post = Post.find(params[:id])
+  end
 
-    def attach_other_images
-      blob_signed_ids = params[:post][:photo_attributes][:other_images]
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def post_params
+    params.require(:post).permit(:id, :title, :body, :posted_date, :content, :remove_main_image, :main_image, other_images: [])
+  end
 
-      if blob_signed_ids
-        blob_signed_ids.each do |signed_blob_id|
-          @post.photo.attach_other_images(signed_blob_id)
-        end
+  def attach_other_images
+    blob_signed_ids = params[:other_images]
+
+    if blob_signed_ids
+      blob_signed_ids.each do |signed_blob_id|
+        @post.attach_other_images(signed_blob_id)
       end
     end
+  end
 end

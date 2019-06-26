@@ -50,7 +50,7 @@ function upload(trix, form, attachment) {
       const hiddenField = document.createElement('input');
       hiddenField.setAttribute('type', 'hidden');
       hiddenField.setAttribute('value', blob.signed_id);
-      hiddenField.name = 'post[photo_attributes][other_images][]';
+      hiddenField.name = 'post[other_images][]';
       form.appendChild(hiddenField);
 
       // Attach to the Trix editor
@@ -72,6 +72,9 @@ function attachToTrix(attachment, blob) {
   const url = `/blobs/${blob.signed_id}/${blob.filename}`;
 
   xhr.open('POST', url, true);
+
+  // Make sure we set the correct headers so Rails doesn't block us
+  xhr.setRequestHeader('X-CSRF-TOKEN', Rails.csrfToken());
 
   // Listen for the load XHR event and set the proper attributes on the attachment
   xhr.addEventListener('load', function (event) {

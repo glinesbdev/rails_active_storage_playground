@@ -7,7 +7,6 @@ class BlobsController < ActiveStorage::BlobsController
 
   def destroy
     respond_to do |format|
-      byebug
       blob = ActiveStorage::Blob.find_signed(params[:signed_id]).purge
 
 
