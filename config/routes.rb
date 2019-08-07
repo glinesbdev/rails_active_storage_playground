@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
-  root to: 'posts#index'
+  root 'posts#index'
   match 'blobs/:signed_id/*filename', to: 'blobs#show', via: [:get, :post]
-  delete 'blobs/:signed_id', to: 'blobs#destroy'
+  delete 'attachments/:signed_id/*filename', to: 'attachments#destroy'
+  resources :attachments, only: [:destroy], as: :destroy_attachment
   resources :posts
 end

@@ -11,6 +11,10 @@
     </div>
   <% end %>
 
+  <% if post.id? %>
+    <%= tag.input type: 'hidden', name: 'post_id', value: post.id, id: 'post-id' %>
+  <% end %>
+
   <div class="field">
     <%= form.label :title %>
     <%= form.text_field :title %>
@@ -22,8 +26,8 @@
   </div>
 
   <div class="field">
-    <%= form.label :posted_date %>
-    <%= form.datetime_select :posted_date %>
+    <%= form.label :posted_at %>
+    <%= form.datetime_select :posted_at %>
   </div>
 
   <div class="field">
@@ -32,22 +36,19 @@
   </div>
 
   <% if post.main_image.attached? %>
-    <div class="field">
-      <%= form.label :remove_main_image, "Remove Main Image" %>
-      <%= form.check_box :remove_main_image %>
-    </div>
+    <p>
+      <%= link_to 'Remove Main Image', "#{destroy_attachment_path(post.main_image.id)}?post_id=#{post.id}", method: 'delete', data: { confirm: 'Delete the main image attachment?' } %>
+    </p>
 
     <div>Current main image: </div>
     <%= image_tag post.main_image.variant(resize: '200x200') %>
     <%= tag.input type: 'hidden', name: 'post[main_image]', value: post.main_image.blob.signed_id %>
   <% end %>
 
-  <% if post.other_images.attached? %>  
-    <% post.other_images.each do |other| %>
-      <%= tag.input type: 'hidden', name: 'post[other_images][]', value: other.blob.signed_id %>
-    <% end %>
+  <% post.other_images.each do |other| %>
+    <%= tag.input type: 'hidden', name: 'post[other_images][]', value: other.blob.signed_id %>
   <% end %>
-  
+
   <div class="field">
     <%= form.label :content %>
     <%= form.rich_text_area :content %>

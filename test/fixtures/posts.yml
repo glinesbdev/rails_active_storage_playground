@@ -3,9 +3,9 @@
 one:
   title: MyString
   body: MyText
-  posted_date: 2019-03-01 13:06:44
+  posted_at: 2019-03-01 13:06:44
 
 two:
   title: MyString
   body: MyText
-  posted_date: 2019-03-01 13:06:44
+  posted_at: 2019-03-01 13:06:44
