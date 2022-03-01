@@ -35,7 +35,7 @@ gem 'mini_magick', '>= 4.9.4'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-gem 'image_processing', '~> 1.2'
+gem 'image_processing', '~> 1.12'
 gem 'responders'
 gem 'trix'
 
